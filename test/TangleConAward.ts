@@ -2,11 +2,11 @@ import {expect} from "chai";
 import hre from "hardhat";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 
-describe("TangleConAward", function () {
+describe("TangleConAwards", function () {
 
     async function deployAwardFixture() {
         const [owner, otherAccount] = await hre.ethers.getSigners();
-        const Award = await hre.ethers.getContractFactory("TangleConAward");
+        const Award = await hre.ethers.getContractFactory("TangleConAwards");
         //deploy the smart contract with the constructor
         const award = await Award.connect(owner).deploy(".json");
         const contract = await award.deployed();
@@ -45,7 +45,7 @@ describe("TangleConAward", function () {
 
         await expect(contract.connect(otherAccount).mapAwardEditionURI(1,url1)).to.be.revertedWith("Ownable: caller is not the owner");
         await expect(contract.connect(otherAccount).mapAwardID(1,2,1)).to.be.revertedWith("Ownable: caller is not the owner");
-        await expect(contract.connect(otherAccount).airDropAward(1, otherAccount.address)).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(contract.connect(otherAccount).airdropAwards(1, [otherAccount.address])).to.be.revertedWith("Ownable: caller is not the owner");
         await expect(contract.connect(otherAccount).adminBurnAward(otherAccount.address, 1)).to.be.revertedWith("Ownable: caller is not the owner");
         await expect(contract.connect(otherAccount).setSuffix("overwrite")).to.be.revertedWith("Ownable: caller is not the owner");
     });
@@ -75,7 +75,7 @@ describe("TangleConAward", function () {
         //userAccount should have 0 SBTs at first
         expect(await contract.balanceOf(userAccount, 1)).to.equal(0);
 
-        await contract.airDropAward(1, userAccount);
+        await contract.airdropAwards(1, [userAccount]);
 
         //now it should be 1
         expect(await contract.balanceOf(userAccount, 1)).to.equal(1);
@@ -96,8 +96,8 @@ describe("TangleConAward", function () {
         expect(await contract.balanceOf(userAccount, 1)).to.equal(0);
         expect(await contract.balanceOf(ownerAccount, 2)).to.equal(0);
 
-        await contract.airDropAward(1, userAccount);
-        await contract.airDropAward(2, ownerAccount);
+        await contract.airdropAwards(1, [userAccount]);
+        await contract.airdropAwards(2, [ownerAccount]);
 
         //now it should be 1
         expect(await contract.balanceOf(userAccount, 1)).to.equal(1);

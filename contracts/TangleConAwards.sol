@@ -77,8 +77,11 @@ contract TangleConAwards is ERC1155, Ownable {
      * Admin functions to adjust, distribute or remove "Soulbound Tokens".
      */
 
-    function airDropAward(uint256 id, address holder) external onlyOwner {
-        _mint(holder, id, 1, "");
+    
+    function airdropAwards(uint256 id, address [] calldata holders) external onlyOwner {
+        for(uint i = 0; i < holders.length; i++){
+            _mint(holders[i], id, 1, "");
+        }
     }
 
     function adminBurnAward(address holder, uint256 id) external onlyOwner {
